@@ -1,31 +1,30 @@
 document.addEventListener('DOMContentLoaded', main);
 
 async function main() {
-    const products = await getData();
-    searchProduct(products)
-
+    const moviesData = await getData();
+    searchMovies(moviesData)
 }
 
 async function getData() {
-    const URL = 'https://japceibal.github.io/japflix_api/movies-data.json'
+    const URL = 'https://japceibal.github.io/japflix_api/movies-data.json';
     const res = await fetch(URL);
-    if (!res.ok) alert('error jeje')
-    const data = await res.json()
+    if (!res.ok) throw new Error(`Res error: ${res.status}`);
+    const data = await res.json();
     return data;
 }
 
-function searchProduct(products) {
+function searchMovies(movies) {
     const searchInput = document.getElementById('inputBuscar');
     const searchBtn = document.getElementById('btnBuscar');
-    /*
-        title, tagline, score
-    */
+
+
+
     searchBtn.addEventListener('click', () => {
 
         if (searchInput.value.length < 1) return;
 
-        const filteredData = products.filter(product => {
-            const { title, overview, tagline, genres } = product
+        const filteredData = movies.filter(movie => {
+            const { title, overview, tagline } = movie
 
             const fTitle = title.toLowerCase().includes(searchInput.value.toLowerCase())
             const fOverview = overview.toLowerCase().includes(searchInput.value.toLowerCase())
@@ -34,17 +33,16 @@ function searchProduct(products) {
             return fTitle || fOverview || fTagline
         })
 
-        showProducts(filteredData.slice(0, 5))
+        showMovies(filteredData.slice(0, 5))
     });
 
 }
 
-function showProducts(data) {
+function showMovies(filteredData) {
     const lista = document.getElementById('lista');
-    // console.log(lista)
 
-    const template = data.map((element, indice) => {
-        const { title, tagline, vote_average, id, overview, genres, release_date, runtime, revenue, budget } = element
+    const template = filteredData.map((element, indice) => {
+        const { title, tagline, vote_average, overview, genres, release_date, runtime, revenue, budget } = element
         const vote_averageInt = Math.round(vote_average / 2);
         // console.log(element)
         const year = release_date.split("-")[0];
@@ -87,10 +85,10 @@ function showProducts(data) {
                                     More
                                     </button>
                                     <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Year: ${year}</a></li>
-                                    <li><a class="dropdown-item" href="#">Runtime: ${runtime}</a></li>
-                                    <li><a class="dropdown-item" href="#">Budget: $${budget}</a></li>
-                                    <li><a class="dropdown-item" href="#">Revenue: $${revenue}</a></li>
+                                    <li class="dropdown-item">Year: ${year}</li>
+                                    <li class="dropdown-item">Runtime: ${runtime}</li>
+                                    <li class="dropdown-item">Budget: $${budget}</li>
+                                    <li class="dropdown-item">Revenue: $${revenue}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -125,8 +123,6 @@ function commentScore(score) {
 }
 
 function showGenres(genreArray) {
-
-
     const genres = genreArray.map(genre => {
         return `
                 ${genre.name}
